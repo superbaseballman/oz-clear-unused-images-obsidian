@@ -152,23 +152,37 @@ const fileIsInExcludedFolder = (file: TFile, plugin: OzanClearImages): boolean =
         return false;
     } else {
         // Get All Excluded Folder Paths
-        var excludedFolderPaths = new Set(
-            excludedFoldersSettings.split(',').map((folderPath) => {
-                return folderPath.trim();
-            })
-        );
+        var excludedFolderPaths = excludedFoldersSettings.split(',').map((folderPath) => {
+            return folderPath.trim();
+        });
+
+        // Handle the case where file might not have a parent (shouldn't happen for files in folders, but be safe)
+        if (!file.parent) {
+            return false;
+        }
 
         if (excludeSubfolders) {
-            // If subfolders included, check if any provided path partially match
-            for (let exludedFolderPath of excludedFolderPaths) {
-                var pathRegex = new RegExp(exludedFolderPath + '.*');
-                if (file.parent.path.match(pathRegex)) {
+            // If subfolders included, check if the file's parent path starts with any excluded folder path
+            for (let excludedFolderPath of excludedFolderPaths) {
+                // Normalize the excluded path to ensure proper matching by adding a trailing slash
+                // This prevents partial matches like 'Attach' matching 'Attachment'
+                let normalizedExcludedPath = excludedFolderPath;
+                if (!normalizedExcludedPath.endsWith('/')) {
+                    normalizedExcludedPath += '/';
+                }
+                
+                let normalizedFilePath = file.parent.path;
+                if (!normalizedFilePath.endsWith('/')) {
+                    normalizedFilePath += '/';
+                }
+                
+                if (normalizedFilePath.startsWith(normalizedExcludedPath)) {
                     return true;
                 }
             }
         } else {
             // Full path of parent should match if subfolders are not included
-            if (excludedFolderPaths.has(file.parent.path)) {
+            if (excludedFolderPaths.includes(file.parent.path)) {
                 return true;
             }
         }
