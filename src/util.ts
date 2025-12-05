@@ -145,7 +145,7 @@ export const deleteFilesInTheList = async (
 };
 
 // Check if File is Under Excluded Folders
-const fileIsInExcludedFolder = (file: TFile, plugin: OzanClearImages): boolean => {
+export const fileIsInExcludedFolder = (file: TFile, plugin: OzanClearImages): boolean => {
     var excludedFoldersSettings = plugin.settings.excludedFolders;
     var excludeSubfolders = plugin.settings.excludeSubfolders;
     if (excludedFoldersSettings === '') {

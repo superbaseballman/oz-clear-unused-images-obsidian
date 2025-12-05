@@ -1,7 +1,7 @@
 import { Plugin, TFile, Notice } from 'obsidian';
 import { OzanClearImagesSettingsTab } from './settings';
 import { OzanClearImagesSettings, DEFAULT_SETTINGS } from './settings';
-import { LogsModal } from './modals';
+import { LogsModal, SelectiveDeleteModal } from './modals';
 import * as Util from './util';
 
 export default class OzanClearImages extends Plugin {
@@ -49,21 +49,19 @@ export default class OzanClearImages extends Plugin {
     // Compare Used Images with all images and return unused ones
     clearUnusedAttachments = async (type: 'all' | 'image') => {
         var unusedAttachments: TFile[] = await Util.getUnusedAttachments(this.app, type);
-        var len = unusedAttachments.length;
+        
+        // Filter out files that are in excluded folders
+        const filteredUnusedAttachments = unusedAttachments.filter(file => {
+            return !Util.fileIsInExcludedFolder(file, this);
+        });
+        
+        var len = filteredUnusedAttachments.length;
         if (len > 0) {
-            let logs = '';
-            logs += `[+] ${Util.getFormattedDate()}: Clearing started.</br>`;
-            Util.deleteFilesInTheList(unusedAttachments, this, this.app).then(({ deletedImages, textToView }) => {
-                logs += textToView;
-                logs += '[+] ' + deletedImages.toString() + ' image(s) in total deleted.</br>';
-                logs += `[+] ${Util.getFormattedDate()}: Clearing completed.`;
-                if (this.settings.logsModal) {
-                    let modal = new LogsModal(logs, this.app);
-                    modal.open();
-                }
-            });
+            // Show the selective delete modal instead of immediately deleting
+            const modal = new SelectiveDeleteModal(filteredUnusedAttachments, this.app);
+            modal.open();
         } else {
-            new Notice(`All ${type === 'image' ? 'images' : 'attachments'} are used. Nothing was deleted.`);
+            new Notice(`All ${type === 'image' ? 'images' : 'attachments'} are used or in excluded folders. Nothing was deleted.`);
         }
     };
 }
