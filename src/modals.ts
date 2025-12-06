@@ -107,11 +107,14 @@ export class SelectiveDeleteModal extends Modal {
             });
 
             if (filesToDelete.length > 0) {
-                // Confirm deletion
-                const confirmed = confirm(`Are you sure you want to delete ${filesToDelete.length} file(s)?`);
-                if (confirmed) {
-                    // Perform deletion here
+                try {
+                    // Perform deletion directly without confirmation
                     await this.deleteSelectedFiles(filesToDelete);
+                } catch (error) {
+                    console.error('Error deleting files:', error);
+                    new (this.app as any).Notices(`Error deleting files: ${error.message}`);
+                } finally {
+                    // Always close the modal after attempting to delete
                     myModal.close();
                 }
             } else {
