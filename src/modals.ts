@@ -1,4 +1,4 @@
-import { Modal, App, TFile } from 'obsidian';
+import { Modal, App, TFile, Notice } from 'obsidian';
 
 export class LogsModal extends Modal {
     textToView: string;
@@ -112,7 +112,7 @@ export class SelectiveDeleteModal extends Modal {
                     await this.deleteSelectedFiles(filesToDelete);
                 } catch (error) {
                     console.error('Error deleting files:', error);
-                    new (this.app as any).Notices(`Error deleting files: ${error.message}`);
+                    new Notice(`Error deleting files: ${error.message}`);
                 } finally {
                     // Always close the modal after attempting to delete
                     myModal.close();
@@ -170,7 +170,7 @@ export class SelectiveDeleteModal extends Modal {
             deletedCount++;
         }
 
-        new (this.app as any).Notices(`Successfully deleted ${deletedCount} file(s).`);
+        new Notice(`Successfully deleted ${deletedCount} file(s).`);
     }
 
     onClose() {
