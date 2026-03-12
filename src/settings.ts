@@ -7,6 +7,7 @@ export interface OzanClearImagesSettings {
     excludedFolders: string;
     ribbonIcon: boolean;
     excludeSubfolders: boolean;
+    excludedFiles: string[];
 }
 
 export const DEFAULT_SETTINGS: OzanClearImagesSettings = {
@@ -15,6 +16,7 @@ export const DEFAULT_SETTINGS: OzanClearImagesSettings = {
     excludedFolders: '',
     ribbonIcon: false,
     excludeSubfolders: false,
+    excludedFiles: [],
 };
 
 export class OzanClearImagesSettingsTab extends PluginSettingTab {

@@ -51,8 +51,13 @@ export default class OzanClearImages extends Plugin {
         var unusedAttachments: TFile[] = await Util.getUnusedAttachments(this.app, type);
         
         // Filter out files that are in excluded folders
-        const filteredUnusedAttachments = unusedAttachments.filter(file => {
+        let filteredUnusedAttachments = unusedAttachments.filter(file => {
             return !Util.fileIsInExcludedFolder(file, this);
+        });
+        
+        // Also filter out files that are in excludedFiles list
+        filteredUnusedAttachments = filteredUnusedAttachments.filter(file => {
+            return !this.settings.excludedFiles.includes(file.path);
         });
         
         var len = filteredUnusedAttachments.length;

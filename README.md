@@ -8,6 +8,14 @@ In case any of these image files are not referenced in any document of the vault
 
 ## Settings
 
+### Ribbon Icon
+
+Turn on this option if you want to show the Ribbon Icon for clearing images.
+
+### Delete Logs
+
+Turn off if you don't want to view the delete logs Modal to pop up after deletion is completed. It won't appear if no image is deleted.
+
 ### Deleted Image Destination
 
 Please make sure that you select the destination for the deleted images under "Clear Unused Images Settings" tab. You have 3 options:
@@ -18,7 +26,7 @@ Please make sure that you select the destination for the deleted images under "C
 
 2. **Move to System Trash** - Files are going to be moved to the Operating System trash.
 
-3. **Permanently Delete** - Files are going to be destroyed permanently. You won't beable to revert back.
+3. **Permanently Delete** - Files are going to be destroyed permanently. You won't be able to revert back.
 
 ### Excluded Folders
 
@@ -29,6 +37,12 @@ You can exclude folders, from which you don't want images to be removed during t
 You can now exclude all subfolders under the folder paths provided above:
 
 <img src="https://github.com/ozntel/oz-clear-unused-images-obsidian/blob/master/images/exclude-subfolders.png?raw=true">
+
+### Ignoring Specific Files
+
+When running the cleanup, you will see a modal showing all unused files with checkboxes. For each file, you can click the **"忽略此文件"** (Ignore This File) button to permanently exclude it from future scans. The ignored file paths will be saved in the plugin's data.json file and will not appear in the unused files list again.
+
+This feature is useful when you want to keep certain unused images in your vault without having them flagged every time you run the cleanup.
 
 ## How to use
 

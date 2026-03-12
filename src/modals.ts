@@ -86,6 +86,46 @@ export class SelectiveDeleteModal extends Modal {
                 // Optionally close the modal after opening the file
                 // myModal.close();
             });
+
+            // Ignore button
+            const ignoreButton = fileItem.createEl('button', { text: '忽略此文件' });
+            ignoreButton.addClass('ignore-button');
+            ignoreButton.style.marginLeft = 'auto';
+            ignoreButton.addEventListener('click', async () => {
+                try {
+                    // Get the plugin instance
+                    const plugin = (this.app as any).plugins.plugins['oz-clear-unused-images'];
+                    if (plugin) {
+                        // Add file path to excludedFiles array
+                        if (!plugin.settings.excludedFiles.includes(file.path)) {
+                            plugin.settings.excludedFiles.push(file.path);
+                            await plugin.saveSettings();
+                            
+                            new Notice(`已忽略文件：${file.path}`);
+                            
+                            // Close the modal and reopen it with updated file list
+                            myModal.close();
+                            
+                            // Filter out the ignored file and show updated modal
+                            const updatedFiles = this.unusedFiles.filter(f => f.path !== file.path);
+                            if (updatedFiles.length > 0) {
+                                const newModal = new SelectiveDeleteModal(updatedFiles, this.app);
+                                newModal.open();
+                            } else {
+                                new Notice('所有文件都已被忽略或移除');
+                            }
+                        } else {
+                            new Notice('该文件已在忽略列表中');
+                        }
+                    } else {
+                        new Notice('无法找到插件实例');
+                        console.error('Plugin instance not found. Plugin ID: oz-clear-unused-images');
+                    }
+                } catch (error) {
+                    console.error('Error ignoring file:', error);
+                    new Notice(`忽略文件时出错：${error.message}`);
+                }
+            });
         });
 
         // Action Buttons
@@ -146,7 +186,7 @@ export class SelectiveDeleteModal extends Modal {
     }
 
     async deleteSelectedFiles(filesToDelete: TFile[]) {
-        const plugin = (this.app as any).plugins.plugins['oz-clear-unused-images'];
+        const plugin = (this.app as any).plugins.plugins['oz-clear-unused-images-obsidian'];
         const deleteOption = plugin?.settings.deleteOption || '.trash';
 
         // Import the fileIsInExcludedFolder function to respect exclusion settings
