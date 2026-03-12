@@ -1,4 +1,4 @@
-import { App, TFile } from 'obsidian';
+import { App, TFile} from 'obsidian';
 import OzanClearImages from './main';
 import { getAllLinkMatchesInFile, LinkMatch } from './linkDetector';
 
@@ -46,66 +46,71 @@ const getAttachmentsInVault = (app: App, type: 'image' | 'all'): TFile[] => {
 
 // New Method for Getting All Used Attachments
 const getAttachmentPathSetForVault = async (app: App): Promise<Set<string>> => {
-    var attachmentsSet: Set<string> = new Set();
-    var resolvedLinks = app.metadataCache.resolvedLinks;
+    const attachmentsSet = new Set<string>();
+    // 用公开类型替代未导出的MetadataCacheResolvedLinks
+    const resolvedLinks = app.metadataCache.resolvedLinks as Record<string, Record<string, number>>;
+
+    // 步骤1：使用官方API获取所有已解析的链接（核心场景）
     if (resolvedLinks) {
-        for (const [mdFile, links] of Object.entries(resolvedLinks)) {
-            for (const [filePath, nr] of Object.entries(resolvedLinks[mdFile])) {
-                if (!(filePath as String).endsWith('.md')) {
-                    attachmentsSet.add(filePath);
+        for (const [sourceFilePath, linkMap] of Object.entries(resolvedLinks)) {
+            for (const [targetPath, _count] of Object.entries(linkMap)) {
+                if (!targetPath.endsWith('.md')) {
+                    addToSet(attachmentsSet, targetPath);
                 }
             }
         }
     }
-    // Loop Files and Check Frontmatter/Canvas
-    let allFiles = app.vault.getFiles();
-    for (let i = 0; i < allFiles.length; i++) {
-        let obsFile = allFiles[i];
-        // Check Frontmatter for md files and additional links that might be missed in resolved links
-        if (obsFile.extension === 'md') {
-            // Frontmatter
-            let fileCache = app.metadataCache.getFileCache(obsFile);
-            if (fileCache.frontmatter) {
-                let frontmatter = fileCache.frontmatter;
-                for (let k of Object.keys(frontmatter)) {
-                    if (typeof frontmatter[k] === 'string') {
-                        if (frontmatter[k].match(bannerRegex)) {
-                            let fileName = frontmatter[k].match(bannerRegex)[1];
-                            let file = app.metadataCache.getFirstLinkpathDest(fileName, obsFile.path);
-                            if (file) {
-                                addToSet(attachmentsSet, file.path);
+
+    // 步骤2：补充解析Frontmatter和Canvas（官方API覆盖不到的场景）
+    const allFiles = app.vault.getFiles();
+    for (const file of allFiles) {
+        // 2.1 处理Markdown文件的Frontmatter
+        if (file.extension === 'md') {
+            const fileCache = app.metadataCache.getFileCache(file);
+            if (fileCache?.frontmatter) {
+                for (const [_key, value] of Object.entries(fileCache.frontmatter)) {
+                    if (typeof value === 'string' && pathIsAnImage(value)) {
+                        const resolvedFile = app.metadataCache.getFirstLinkpathDest(value, file.path);
+                        if (resolvedFile instanceof TFile) {
+                            addToSet(attachmentsSet, resolvedFile.path);
+                        } else {
+                            addToSet(attachmentsSet, value);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 2.2 处理Canvas文件（无任何未定义变量）
+        else if (file.extension === 'canvas') {
+            try {
+                const canvasContent = await app.vault.cachedRead(file);
+                const canvasData = JSON.parse(canvasContent);
+                
+                if (Array.isArray(canvasData.nodes)) {
+                    for (const node of canvasData.nodes) {
+                        // 处理Canvas中的文件节点
+                        if (node.type === 'file' && typeof node.file === 'string') {
+                            addToSet(attachmentsSet, node.file);
+                        }
+                        // 处理Canvas文本节点中的链接（无tempLinkMap相关代码）
+                        else if (node.type === 'text' && typeof node.text === 'string') {
+                            // 复用链接检测函数解析文本中的链接
+                            const linkMatches = await getAllLinkMatchesInFile(file, app, node.text);
+                            for (const linkMatch of linkMatches) {
+                                if (!linkMatch.linkText.endsWith('.md')) {
+                                    addToSet(attachmentsSet, linkMatch.linkText);
+                                }
                             }
-                        } else if (pathIsAnImage(frontmatter[k])) {
-                            addToSet(attachmentsSet, frontmatter[k]);
                         }
                     }
                 }
-            }
-            // Any Additional Link
-            let linkMatches: LinkMatch[] = await getAllLinkMatchesInFile(obsFile, app);
-            for (let linkMatch of linkMatches) {
-                addToSet(attachmentsSet, linkMatch.linkText);
-            }
-        }
-        // Check Canvas for links
-        else if (obsFile.extension === 'canvas') {
-            let fileRead = await app.vault.cachedRead(obsFile);
-            let canvasData = JSON.parse(fileRead);
-            if (canvasData.nodes && canvasData.nodes.length > 0) {
-                for (const node of canvasData.nodes) {
-                    // node.type: 'text' | 'file'
-                    if (node.type === 'file') {
-                        addToSet(attachmentsSet, node.file);
-                    } else if (node.type == 'text') {
-                        let linkMatches: LinkMatch[] = await getAllLinkMatchesInFile(obsFile, app, node.text);
-                        for (let linkMatch of linkMatches) {
-                            addToSet(attachmentsSet, linkMatch.linkText);
-                        }
-                    }
-                }
+            } catch (e) {
+                console.warn(`解析Canvas文件失败: ${file.path}`, e);
             }
         }
     }
+
     return attachmentsSet;
 };
 
