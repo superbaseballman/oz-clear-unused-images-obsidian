@@ -1,123 +1,123 @@
-# Obsidian Plugin for Clearing Unused Images
+# Obsidian 清除未使用图片插件
 
-This plugin helps you to keep your vault clean by deleting the images you are not referencing in your markdown notes anymore.
+本插件通过删除不再在 Markdown 笔记中引用的图片，帮助您保持 vault 的整洁。
 
-The plugin simply gets all of your image links from all the markdown documents and compares these images with all image files you have available in your vault.
+插件会获取所有 Markdown 文档中的图片链接，并与 vault 中可用的所有图片文件进行比较。
 
-In case any of these image files are not referenced in any document of the vault, they will be automatically deleted.
+如果任何图片文件没有在 vault 的任何文档中被引用，它们将被自动删除。
 
-## 🌍 Internationalization (i18n)
+## 🌍 国际化 (i18n)
 
-This plugin now supports multiple languages! The interface will automatically switch based on your Obsidian language settings.
+本插件现在支持多种语言！界面将根据您的 Obsidian 语言设置自动切换。
 
-**Supported Languages:**
-- ✅ English (Default)
-- ✅ 简体中文 (Simplified Chinese)
-- ✅ 繁體中文 (Traditional Chinese)
+**支持的语言:**
+- ✅ English (默认)
+- ✅ 简体中文
+- ✅ 繁體中文 (繁体中文)
 
-Want to contribute translations for your language? Check out our [I18N Guide](./I18N_GUIDE.md) to learn how to add new language support!
+## 设置
 
-## Settings
+### 功能区图标 (Ribbon Icon)
 
-### Ribbon Icon
+如果您希望显示清除图片的功能区图标，请打开此选项。
 
-Turn on this option if you want to show the Ribbon Icon for clearing images.
+### 删除日志 (Delete Logs)
 
-### Delete Logs
+如果您不想在删除完成后查看删除日志弹窗，请关闭此选项。如果没有删除任何图片，则不会出现此弹窗。
 
-Turn off if you don't want to view the delete logs Modal to pop up after deletion is completed. It won't appear if no image is deleted.
+### 已删除图片的目标位置
 
-### Deleted Image Destination
+请确保在"清除图片设置"标签下选择已删除图片的目标位置。您有 3 个选项:
 
-Please make sure that you select the destination for the deleted images under "Clear Unused Images Settings" tab. You have 3 options:
+![alt text](images\image.png)
 
-<img src="https://github.com/ozntel/oz-clear-unused-images-obsidian/blob/master/images/delete-destination.png?raw=true">
+1. **移动到 Obsidian 回收站** - 文件将被移动到 Obsidian Vault 下的 `.trash` 文件夹。
 
-1. **Move to Obsidian Trash** - Files are going to be moved to the `.trash` under the Obsidian Vault.
+2. **移动到系统回收站** - 文件将被移动到操作系统的回收站。
 
-2. **Move to System Trash** - Files are going to be moved to the Operating System trash.
+3. **永久删除** - 文件将被永久销毁，无法恢复。
 
-3. **Permanently Delete** - Files are going to be destroyed permanently. You won't be able to revert back.
+### 排除的文件夹
 
-### Excluded Folders
+您可以排除某些文件夹，在扫描过程中不会移除这些文件夹中的图片。如果需要排除多个文件夹，可以用逗号分隔。请确保提供 vault 中的完整路径:
 
-You can exclude folders, from which you don't want images to be removed during the scan. In case there are multiple folders to be excluded, you can divide them by comma. Please ensure you provide the full path in Vault:
+![alt text](images\image1.png)
 
-<img src="https://github.com/ozntel/oz-clear-unused-images-obsidian/blob/master/images/excluded-folders.png?raw=true">
+您现在可以排除上述提供的文件夹路径下的所有子文件夹:
 
-You can now exclude all subfolders under the folder paths provided above:
+![alt text](images\image2.png)
 
-<img src="https://github.com/ozntel/oz-clear-unused-images-obsidian/blob/master/images/exclude-subfolders.png?raw=true">
+### 忽略特定文件
 
-### Ignoring Specific Files
+运行清理时，您将看到一个模态框，显示所有未使用的文件及其复选框。对于每个文件，您可以点击 **"忽略此文件"** 按钮，永久性地将其排除在未来的扫描之外。被忽略的文件路径将保存在插件的 data.json 文件中，不会再出现在未使用文件列表中。
 
-When running the cleanup, you will see a modal showing all unused files with checkboxes. For each file, you can click the **"Ignore This File"** button to permanently exclude it from future scans. The ignored file paths will be saved in the plugin's data.json file and will not appear in the unused files list again.
+当您想保留某些未使用的图片在 vault 中，而不想在每次运行清理时都被标记出来，这个功能非常有用。
 
-This feature is useful when you want to keep certain unused images in your vault without having them flagged every time you run the cleanup.
+## 使用方法
 
-## How to use
+1. 在社区插件中激活本插件
 
-1. Activate the plugin from Community Plugins
+2. 您可以选择以下任一方式:
 
-2. You can either:
-
-    - Activate the Ribbon Icon from plugin settings and click Icon from Left Ribbon for running the clean up:
+    - 在插件设置中启用功能区图标，然后点击左侧功能区中的图标来运行清理:
 
     <img src="https://user-images.githubusercontent.com/55187568/118400231-0ceeed80-b661-11eb-9b07-7e22fab02694.png">
 
-    - Or use Ribbon Icon or Open Command Palette (Using `Ctrl/Cmd + P` or from Ribbon) Run "Clear Unused Images".
+    - 或使用功能区图标或打开命令面板 (使用 `Ctrl/Cmd + P` 或从功能区),运行"清除未使用的图片"。
 
     <img src="https://github.com/ozntel/oz-clear-unused-images-obsidian/raw/master/images/Clear-Command.png">
 
-3. If you have turned on "Delete Logs" option in plugin settings, you will see a modal popping up with an information which images are deleted from your vault:
+3. 如果您在插件设置中打开了"删除日志"选项，您将看到一个弹窗，显示哪些图片已从 vault 中删除:
 
 <img src="https://github.com/ozntel/oz-clear-unused-images-obsidian/raw/master/images/logs-modal.png">
 
-In case all images are used, you will see communication as below:
+如果所有图片都在使用中，您将看到如下提示:
 
 <img src="https://github.com/ozntel/oz-clear-unused-images-obsidian/raw/master/images/nothing-deleted.png">
 
-**Scanned Image Formats** : jpg, jpeg, png, gif, svg, bmp, webp
+**扫描的图片格式**: jpg, jpeg, png, gif, svg, bmp, webp
 
-## Planned Features
+## 计划功能
 
--   [x] Creating settings for users to select the destination of the deleted files
--   [x] Excluded folders settings for the scan
--   [x] **Internationalization (i18n) support** ✨ NEW!
--   [ ] Images to be cleaned during load of the vault if users chooses.
--   [ ] Images to be cleaned every X minutes depending on user's choice
+-   [x] 创建用户选择已删除文件目的地的设置
+-   [x] 扫描的排除文件夹设置
+-   [x] **国际化 (i18n) 支持** ✨ 新功能!
+-   [ ] 如果用户选择，在加载 vault 期间清理图片
+-   [ ] 每 X 分钟清理一次图片 (由用户选择)
 
-## Support
+## 支持
 
-If you are enjoying the plugin then you can support my work and enthusiasm by buying me a coffee:
+如果您喜欢这个插件，您可以通过请我喝咖啡来支持我的工作:
 
 <a href='https://ko-fi.com/L3L356V6Q' target='_blank'>
     <img height='48' style='border:0px;height:48px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' />
 </a>
 
-## Development
+## 开发
 
-### Building the Plugin
+### 构建插件
 
 ```bash
-# Install dependencies
+# 安装依赖
 npm install
 
-# Development mode with watch
+# 开发模式 (监听)
 npm run dev
 
-# Production build
+# 生产环境构建
 npm run build
 ```
 
-### Adding New Translations
+### 添加新翻译
 
-We welcome contributions for additional language support! Please see [I18N_GUIDE.md](./I18N_GUIDE.md) for detailed instructions on how to add new translations.
+我们欢迎贡献更多语言支持! 有关如何添加新翻译的详细说明，请参阅 [I18N_GUIDE.md](./I18N_GUIDE.md)。
 
-## License
+## 许可证
 
 MIT License
 
-## Acknowledgments
+## 致谢
 
-Special thanks to all contributors and the Obsidian community for their support!
+特别感谢所有贡献者和 Obsidian 社区的支持!
+
+
