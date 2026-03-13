@@ -1,42 +1,56 @@
-name: 自动打包发布 Release
+name: Build Obsidian Plugin
 
 on:
   push:
     tags:
-      - 'v*'
+      - "*"
 
 jobs:
-  build-and-release:
+  build:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: 拉取代码
-        uses: actions/checkout@v4
-
-      - name: 设置 Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: 20
-
-      # 只构建生成 main.js
-      - name: 安装依赖并构建
+          node-version: "18"
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build plugin
+        run: npm run build
+      
+      - name: Create release package
         run: |
-          npm install
-          npm run build
-
-      # 查看所有文件（调试用）
-      - name: 查看文件
-        run: ls -al
-
-      # ✅ 直接打包 3 个文件（2个已有 + 1个构建）
-      - name: 打包发布文件
-        run: zip release.zip main.js style.css manifest.json
-
-      # 自动发布到 Release
-      - name: 发布版本
-        uses: softprops/action-gh-release@v2
-        with:
-          files: release.zip
-          name: ${{ github.ref_name }}
-          body: 自动构建发布 ${{ github.ref_name }}
+          # Get version from manifest.json
+          VERSION=$(jq -r '.version' manifest.json)
+          
+          # Create dist directory
+          mkdir -p dist
+          
+          # Copy plugin files to dist
+          cp main.js manifest.json styles.css dist/
+          
+          # Create zip archive
+          cd dist
+          zip -r ../oz-clear-unused-images-${VERSION}.zip .
+          cd ..
+      
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          files: |
+            oz-clear-unused-images-*.zip
+            main.js
+            manifest.json
+            styles.css
