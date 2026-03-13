@@ -12,12 +12,6 @@ export class LogsModal extends Modal {
         let { contentEl } = this;
         let myModal = this;
 
-        // Header
-        const headerWrapper = contentEl.createEl('div');
-        headerWrapper.addClass('unused-images-center-wrapper');
-        const headerEl = headerWrapper.createEl('h1', { text: 'Clear Unused Images - Logs' });
-        headerEl.addClass('modal-title');
-
         // Information to show
         const logs = contentEl.createEl('div');
         logs.addClass('unused-images-logs');
@@ -47,12 +41,6 @@ export class SelectiveDeleteModal extends Modal {
     onOpen() {
         let { contentEl } = this;
         let myModal = this;
-
-        // Header
-        const headerWrapper = contentEl.createEl('div');
-        headerWrapper.addClass('unused-images-center-wrapper');
-        const headerEl = headerWrapper.createEl('h1', { text: 'Unused Files - Selective Delete' });
-        headerEl.addClass('modal-title');
 
         // File list container
         const fileListContainer = contentEl.createEl('div', { cls: 'unused-images-file-list' });
@@ -134,7 +122,7 @@ export class SelectiveDeleteModal extends Modal {
         buttonWrapper.addClass('modal-buttons');
 
         // Delete Selected Button
-        const deleteButton = buttonWrapper.createEl('button', { text: 'Delete Selected' });
+        const deleteButton = buttonWrapper.createEl('button', { text: '删除所选文件' });
         deleteButton.addClass('unused-images-button');
         deleteButton.addClass('delete-button');
         deleteButton.addEventListener('click', async () => {
@@ -163,7 +151,7 @@ export class SelectiveDeleteModal extends Modal {
         });
 
         // Select All/None Button
-        const selectAllButton = buttonWrapper.createEl('button', { text: 'Select All' });
+        const selectAllButton = buttonWrapper.createEl('button', { text: '选择所有文件' });
         selectAllButton.addClass('unused-images-button');
         selectAllButton.addClass('select-button');
         let isSelectingAll = true;
@@ -172,12 +160,12 @@ export class SelectiveDeleteModal extends Modal {
             checkboxes.forEach(checkbox => {
                 checkbox.checked = isSelectingAll;
             });
-            selectAllButton.textContent = isSelectingAll ? 'Select None' : 'Select All';
+            selectAllButton.textContent = isSelectingAll ? '取消选择' : '选择所有文件';
             isSelectingAll = !isSelectingAll;
         });
 
         // Cancel Button
-        const cancelButton = buttonWrapper.createEl('button', { text: 'Cancel' });
+        const cancelButton = buttonWrapper.createEl('button', { text: '取消' });
         cancelButton.addClass('unused-images-button');
         cancelButton.addClass('cancel-button');
         cancelButton.addEventListener('click', () => {

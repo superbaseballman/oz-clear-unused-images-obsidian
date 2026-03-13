@@ -9,24 +9,24 @@ export default class OzanClearImages extends Plugin {
     ribbonIconEl: HTMLElement | undefined = undefined;
 
     async onload() {
-        console.log('Clear Unused Images plugin loaded...');
+        console.log('清理未使用的图片插件已加载...');
         this.addSettingTab(new OzanClearImagesSettingsTab(this.app, this));
         await this.loadSettings();
         this.addCommand({
             id: 'clear-images-obsidian',
-            name: 'Clear Unused Images',
+            name: '清除未使用的图片',
             callback: () => this.clearUnusedAttachments('image'),
         });
         this.addCommand({
             id: 'clear-unused-attachments',
-            name: 'Clear Unused Attachments',
+            name: '清除未使用的附件',
             callback: () => this.clearUnusedAttachments('all'),
         });
         this.refreshIconRibbon();
     }
 
     onunload() {
-        console.log('Clear Unused Images plugin unloaded...');
+        console.log('清理未使用的图片插件已卸载...');
     }
 
     async loadSettings() {
@@ -66,7 +66,7 @@ export default class OzanClearImages extends Plugin {
             const modal = new SelectiveDeleteModal(filteredUnusedAttachments, this.app);
             modal.open();
         } else {
-            new Notice(`All ${type === 'image' ? 'images' : 'attachments'} are used or in excluded folders. Nothing was deleted.`);
+            new Notice(`所有 ${type === 'image' ? '图片' : '附件'} 都被使用或在排除文件夹中。没有文件被删除。`);
         }
     };
 }
