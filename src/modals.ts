@@ -186,8 +186,16 @@ export class SelectiveDeleteModal extends Modal {
     }
 
     async deleteSelectedFiles(filesToDelete: TFile[]) {
-        const plugin = (this.app as any).plugins.plugins['oz-clear-unused-images-obsidian'];
-        const deleteOption = plugin?.settings.deleteOption || '.trash';
+        const plugin = (this.app as any).plugins.plugins['oz-clear-unused-images'];
+        
+        // Check if plugin instance exists before accessing settings
+        if (!plugin) {
+            console.error('Plugin instance not found. Plugin ID: oz-clear-unused-images');
+            new Notice('无法找到插件实例，请尝试重新加载插件');
+            return;
+        }
+        
+        const deleteOption = plugin.settings.deleteOption || '.trash';
 
         // Import the fileIsInExcludedFolder function to respect exclusion settings
         const { fileIsInExcludedFolder } = await import('./util');
