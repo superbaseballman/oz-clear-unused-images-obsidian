@@ -1,4 +1,5 @@
 import { Modal, App, TFile, Notice } from 'obsidian';
+import { i18n } from './i18n';
 
 export class LogsModal extends Modal {
     textToView: string;
@@ -20,7 +21,7 @@ export class LogsModal extends Modal {
         // Close Button
         const buttonWrapper = contentEl.createEl('div');
         buttonWrapper.addClass('unused-images-center-wrapper');
-        const closeButton = buttonWrapper.createEl('button', { text: 'Close' });
+        const closeButton = buttonWrapper.createEl('button', { text: i18n.t('close') });
         closeButton.addClass('unused-images-button');
         closeButton.addEventListener('click', () => {
             myModal.close();
@@ -76,7 +77,7 @@ export class SelectiveDeleteModal extends Modal {
             });
 
             // Ignore button
-            const ignoreButton = fileItem.createEl('button', { text: '忽略此文件' });
+            const ignoreButton = fileItem.createEl('button', { text: i18n.t('modal.ignore.file') });
             ignoreButton.addClass('ignore-button');
             ignoreButton.style.marginLeft = 'auto';
             ignoreButton.addEventListener('click', async () => {
@@ -89,7 +90,7 @@ export class SelectiveDeleteModal extends Modal {
                             plugin.settings.excludedFiles.push(file.path);
                             await plugin.saveSettings();
                             
-                            new Notice(`已忽略文件：${file.path}`);
+                            new Notice(i18n.t('notice.file.ignored', { file: file.path }));
                             
                             // Close the modal and reopen it with updated file list
                             myModal.close();
@@ -100,18 +101,18 @@ export class SelectiveDeleteModal extends Modal {
                                 const newModal = new SelectiveDeleteModal(updatedFiles, this.app);
                                 newModal.open();
                             } else {
-                                new Notice('所有文件都已被忽略或移除');
+                                new Notice(i18n.t('notice.all.images.used'));
                             }
                         } else {
-                            new Notice('该文件已在忽略列表中');
+                            new Notice(i18n.t('notice.file.already.ignored'));
                         }
                     } else {
-                        new Notice('无法找到插件实例');
+                        new Notice(i18n.t('notice.plugin.not.found'));
                         console.error('Plugin instance not found. Plugin ID: oz-clear-unused-images');
                     }
                 } catch (error) {
                     console.error('Error ignoring file:', error);
-                    new Notice(`忽略文件时出错：${error.message}`);
+                    new Notice(i18n.t('notice.error.ignoring.file', { error: error.message }));
                 }
             });
         });
@@ -122,7 +123,7 @@ export class SelectiveDeleteModal extends Modal {
         buttonWrapper.addClass('modal-buttons');
 
         // Delete Selected Button
-        const deleteButton = buttonWrapper.createEl('button', { text: '删除所选文件' });
+        const deleteButton = buttonWrapper.createEl('button', { text: i18n.t('modal.delete.selected') });
         deleteButton.addClass('unused-images-button');
         deleteButton.addClass('delete-button');
         deleteButton.addEventListener('click', async () => {
@@ -140,18 +141,18 @@ export class SelectiveDeleteModal extends Modal {
                     await this.deleteSelectedFiles(filesToDelete);
                 } catch (error) {
                     console.error('Error deleting files:', error);
-                    new Notice(`Error deleting files: ${error.message}`);
+                    new Notice(i18n.t('notice.error.ignoring.file', { error: error.message }));
                 } finally {
                     // Always close the modal after attempting to delete
                     myModal.close();
                 }
             } else {
-                alert('No files selected for deletion.');
+                new Notice(i18n.t('notice.no.files.selected'));
             }
         });
 
         // Select All/None Button
-        const selectAllButton = buttonWrapper.createEl('button', { text: '选择所有文件' });
+        const selectAllButton = buttonWrapper.createEl('button', { text: i18n.t('modal.select.all') });
         selectAllButton.addClass('unused-images-button');
         selectAllButton.addClass('select-button');
         let isSelectingAll = true;
@@ -160,12 +161,12 @@ export class SelectiveDeleteModal extends Modal {
             checkboxes.forEach(checkbox => {
                 checkbox.checked = isSelectingAll;
             });
-            selectAllButton.textContent = isSelectingAll ? '取消选择' : '选择所有文件';
+            selectAllButton.textContent = isSelectingAll ? i18n.t('modal.deselect.all') : i18n.t('modal.select.all');
             isSelectingAll = !isSelectingAll;
         });
 
         // Cancel Button
-        const cancelButton = buttonWrapper.createEl('button', { text: '取消' });
+        const cancelButton = buttonWrapper.createEl('button', { text: i18n.t('cancel') });
         cancelButton.addClass('unused-images-button');
         cancelButton.addClass('cancel-button');
         cancelButton.addEventListener('click', () => {
@@ -179,7 +180,7 @@ export class SelectiveDeleteModal extends Modal {
         // Check if plugin instance exists before accessing settings
         if (!plugin) {
             console.error('Plugin instance not found. Plugin ID: oz-clear-unused-images');
-            new Notice('无法找到插件实例，请尝试重新加载插件');
+            new Notice(i18n.t('notice.plugin.reload.required'));
             return;
         }
         
@@ -206,7 +207,7 @@ export class SelectiveDeleteModal extends Modal {
             deletedCount++;
         }
 
-        new Notice(`Successfully deleted ${deletedCount} file(s).`);
+        new Notice(i18n.t('notice.deleted.success', { count: deletedCount.toString() }));
     }
 
     onClose() {

@@ -1,6 +1,7 @@
 import { App, TFile} from 'obsidian';
 import OzanClearImages from './main';
 import { getAllLinkMatchesInFile, LinkMatch } from './linkDetector';
+import { i18n } from './i18n';
 
 /* ------------------ Image Handlers  ------------------ */
 
@@ -47,10 +48,10 @@ const getAttachmentsInVault = (app: App, type: 'image' | 'all'): TFile[] => {
 // New Method for Getting All Used Attachments
 const getAttachmentPathSetForVault = async (app: App): Promise<Set<string>> => {
     const attachmentsSet = new Set<string>();
-    // 用公开类型替代未导出的MetadataCacheResolvedLinks
+    // 用公开类型替代未导出的 MetadataCacheResolvedLinks
     const resolvedLinks = app.metadataCache.resolvedLinks as Record<string, Record<string, number>>;
 
-    // 步骤1：使用官方API获取所有已解析的链接（核心场景）
+    // 步骤 1：使用官方 API 获取所有已解析的链接（核心场景）
     if (resolvedLinks) {
         for (const [sourceFilePath, linkMap] of Object.entries(resolvedLinks)) {
             for (const [targetPath, _count] of Object.entries(linkMap)) {
@@ -61,10 +62,10 @@ const getAttachmentPathSetForVault = async (app: App): Promise<Set<string>> => {
         }
     }
 
-    // 步骤2：补充解析Frontmatter和Canvas（官方API覆盖不到的场景）
+    // 步骤 2：补充解析 Frontmatter 和 Canvas（官方 API 覆盖不到的场景）
     const allFiles = app.vault.getFiles();
     for (const file of allFiles) {
-        // 2.1 处理Markdown文件的Frontmatter
+        // 2.1 处理 Markdown 文件的 Frontmatter
         if (file.extension === 'md') {
             const fileCache = app.metadataCache.getFileCache(file);
             if (fileCache?.frontmatter) {
@@ -81,7 +82,7 @@ const getAttachmentPathSetForVault = async (app: App): Promise<Set<string>> => {
             }
         }
 
-        // 2.2 处理Canvas文件（无任何未定义变量）
+        // 2.2 处理 Canvas 文件（无任何未定义变量）
         else if (file.extension === 'canvas') {
             try {
                 const canvasContent = await app.vault.cachedRead(file);
@@ -89,11 +90,11 @@ const getAttachmentPathSetForVault = async (app: App): Promise<Set<string>> => {
                 
                 if (Array.isArray(canvasData.nodes)) {
                     for (const node of canvasData.nodes) {
-                        // 处理Canvas中的文件节点
+                        // 处理 Canvas 中的文件节点
                         if (node.type === 'file' && typeof node.file === 'string') {
                             addToSet(attachmentsSet, node.file);
                         }
-                        // 处理Canvas文本节点中的链接（无tempLinkMap相关代码）
+                        // 处理 Canvas 文本节点中的链接（无 tempLinkMap 相关代码）
                         else if (node.type === 'text' && typeof node.text === 'string') {
                             // 复用链接检测函数解析文本中的链接
                             const linkMatches = await getAllLinkMatchesInFile(file, app, node.text);
@@ -106,7 +107,7 @@ const getAttachmentPathSetForVault = async (app: App): Promise<Set<string>> => {
                     }
                 }
             } catch (e) {
-                console.warn(`解析Canvas文件失败: ${file.path}`, e);
+                console.warn(`解析 Canvas 文件失败：${file.path}`, e);
             }
         }
     }
@@ -135,13 +136,13 @@ export const deleteFilesInTheList = async (
         } else {
             if (deleteOption === '.trash') {
                 await app.vault.trash(file, false);
-                textToView += `[+] Moved to Obsidian Trash: ` + file.path + '</br>';
+                textToView += `[+] ${i18n.t('logs.moved.obsidian.trash')}: ` + file.path + '</br>';
             } else if (deleteOption === 'system-trash') {
                 await app.vault.trash(file, true);
-                textToView += `[+] Moved to System Trash: ` + file.path + '</br>';
+                textToView += `[+] ${i18n.t('logs.moved.system.trash')}: ` + file.path + '</br>';
             } else if (deleteOption === 'permanent') {
                 await app.vault.delete(file);
-                textToView += `[+] Deleted Permanently: ` + file.path + '</br>';
+                textToView += `[+] ${i18n.t('logs.deleted.permanently')}: ` + file.path + '</br>';
             }
             deletedImages++;
         }

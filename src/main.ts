@@ -3,6 +3,7 @@ import { OzanClearImagesSettingsTab } from './settings';
 import { OzanClearImagesSettings, DEFAULT_SETTINGS } from './settings';
 import { LogsModal, SelectiveDeleteModal } from './modals';
 import * as Util from './util';
+import { i18n } from './i18n';
 
 export default class OzanClearImages extends Plugin {
     settings: OzanClearImagesSettings;
@@ -14,12 +15,12 @@ export default class OzanClearImages extends Plugin {
         await this.loadSettings();
         this.addCommand({
             id: 'clear-images-obsidian',
-            name: '清除未使用的图片',
+            name: i18n.t('command.clear.images'),
             callback: () => this.clearUnusedAttachments('image'),
         });
         this.addCommand({
             id: 'clear-unused-attachments',
-            name: '清除未使用的附件',
+            name: i18n.t('command.clear.attachments'),
             callback: () => this.clearUnusedAttachments('all'),
         });
         this.refreshIconRibbon();
@@ -40,7 +41,7 @@ export default class OzanClearImages extends Plugin {
     refreshIconRibbon = () => {
         this.ribbonIconEl?.remove();
         if (this.settings.ribbonIcon) {
-            this.ribbonIconEl = this.addRibbonIcon('image-file', 'Clear Unused Images', (event): void => {
+            this.ribbonIconEl = this.addRibbonIcon('image-file', i18n.t('command.clear.images'), (event): void => {
                 this.clearUnusedAttachments('image');
             });
         }
@@ -66,7 +67,7 @@ export default class OzanClearImages extends Plugin {
             const modal = new SelectiveDeleteModal(filteredUnusedAttachments, this.app);
             modal.open();
         } else {
-            new Notice(`所有 ${type === 'image' ? '图片' : '附件'} 都被使用或在排除文件夹中。没有文件被删除。`);
+            new Notice(i18n.t(type === 'image' ? 'notice.all.images.used' : 'notice.all.attachments.used'));
         }
     };
 }
