@@ -29,7 +29,7 @@
 
 请确保在"清除图片设置"标签下选择已删除图片的目标位置。您有 3 个选项:
 
-![alt text](images\delete-destination.png)
+![删除目标设置](images/delete-destination.png)
 
 1. **移动到 Obsidian 回收站** - 文件将被移动到 Obsidian Vault 下的 `.trash` 文件夹。
 
@@ -41,11 +41,11 @@
 
 您可以排除某些文件夹，在扫描过程中不会移除这些文件夹中的图片。如果需要排除多个文件夹，可以用逗号分隔。请确保提供 vault 中的完整路径:
 
-![alt text](images\excluded-folders.png)
+![排除文件夹设置](images/excluded-folders.png)
 
 您现在可以排除上述提供的文件夹路径下的所有子文件夹:
 
-![alt text](images\exclude-subfolders.png)
+![排除子文件夹设置](images/exclude-subfolders.png)
 
 ### 忽略特定文件
 
@@ -61,19 +61,19 @@
 
     - 在插件设置中启用功能区图标，然后点击左侧功能区中的图标来运行清理:
 
-![alt text](images\ribbon-icon-settings.png)
+![功能区图标设置](images/ribbon-icon-settings.png)
 
     - 或使用功能区图标或打开命令面板 (使用 `Ctrl/Cmd + P` 或从功能区),运行"清除未使用的图片"。
 
-![alt text](images\Clear-Command.png)
+![清除命令](images/Clear-Command.png)
 
 3. 如果您在插件设置中打开了"删除日志"选项，您将看到一个弹窗，显示哪些图片已从 vault 中删除:
 
-![alt text](images\images-deleted.png)
+![图片删除日志](images/images-deleted.png)
 
 如果所有图片都在使用中，您将看到如下提示:
 
-![alt text](images\nothing-deleted.png)
+![无文件删除](images/nothing-deleted.png)
 
 **扫描的图片格式**: jpg, jpeg, png, gif, svg, bmp, webp
 
@@ -111,5 +111,9 @@ MIT License
 ## 致谢
 
 特别感谢所有贡献者和 Obsidian 社区的支持!
+
+
+
+
 
 
