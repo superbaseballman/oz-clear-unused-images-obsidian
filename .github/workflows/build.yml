@@ -1,37 +1,40 @@
-name: 自动构建
+name: 自动打包发布 Release
 
-# 触发条件：推送到 main 分支就自动构建
+# 触发条件：打标签时自动执行
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    tags:
+      - 'v*'  # 只要推送 v1.0 / v2.1.0 这种标签就会触发
 
-# 构建任务
 jobs:
-  build:
-    runs-on: ubuntu-latest  # 在最新 Ubuntu 环境运行
-
+  build-and-release:
+    runs-on: ubuntu-latest
     steps:
-      # 1. 拉取代码
       - name: 拉取代码
         uses: actions/checkout@v4
 
-      # 2. 设置环境（根据你的项目选择）
+      # 前端项目（Vue/React/小程序等）
       - name: 设置 Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # 3. 安装依赖 + 构建（核心步骤）
       - name: 安装依赖并构建
         run: |
           npm install
-          npm run build   # 你的构建命令
+          npm run build
 
-      # 4. 上传构建产物（dist、build 等文件夹）
-      - name: 上传构建结果
-        uses: actions/upload-artifact@v4
+      - name: 打包构建结果
+        run: zip -r release.zip dist/  # 把 dist 目录打包成 zip
+
+      # ==============================================
+      # 自动发布到 GitHub Release
+      # ==============================================
+      - name: 发布版本
+        uses: softprops/action-gh-release@v2
         with:
-          name: build-result
-          path: dist/  # 构建输出目录（改成你的）
+          files: release.zip  # 上传的文件
+          name: ${{ github.ref_name }}  # 版本标题
+          body: 自动构建发布 ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
