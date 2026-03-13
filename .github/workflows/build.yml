@@ -1,0 +1,37 @@
+name: 自动构建
+
+# 触发条件：推送到 main 分支就自动构建
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+# 构建任务
+jobs:
+  build:
+    runs-on: ubuntu-latest  # 在最新 Ubuntu 环境运行
+
+    steps:
+      # 1. 拉取代码
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      # 2. 设置环境（根据你的项目选择）
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # 3. 安装依赖 + 构建（核心步骤）
+      - name: 安装依赖并构建
+        run: |
+          npm install
+          npm run build   # 你的构建命令
+
+      # 4. 上传构建产物（dist、build 等文件夹）
+      - name: 上传构建结果
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-result
+          path: dist/  # 构建输出目录（改成你的）
